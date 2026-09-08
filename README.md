@@ -45,7 +45,7 @@ Add the dependency to your `commonMain` source set:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.ezermackenzie:rut-validator-kmp:0.1.0")
+            implementation("io.github.ezermackenzie:rut-validator-kmp:1.0.0")
         }
     }
 }
@@ -53,7 +53,7 @@ kotlin {
 
 ### Gradle (Groovy)
 ```groovy
-implementation 'io.github.ezermackenzie:rut-validator-kmp:0.1.0'
+implementation 'io.github.ezermackenzie:rut-validator-kmp:1.0.0'
 ```
 
 ### Maven
@@ -61,7 +61,7 @@ implementation 'io.github.ezermackenzie:rut-validator-kmp:0.1.0'
 <dependency>
     <groupId>io.github.ezermackenzie</groupId>
     <artifactId>rut-validator-kmp</artifactId>
-    <version>0.1.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
