@@ -37,6 +37,25 @@ public fun CharSequence.formatRut(style: RutFormatStyle = RutFormatStyle.DOTS_AN
     Rut.parse(this).format(style)
 
 /**
+ * Cleans this character sequence by removing all formatting characters and normalizing
+ * check digit `'k'` to uppercase `'K'`.
+ *
+ * @receiver A nullable character sequence to clean.
+ * @return Clean unformatted string representation containing only digits and `'K'`.
+ */
+public fun CharSequence?.cleanRut(): String = Rut.clean(this)
+
+/**
+ * Formats this character sequence in real time as the user types into an interactive field.
+ *
+ * Automatically places thousand dots and hyphen separator before the check digit.
+ *
+ * @receiver A nullable character sequence to format partially.
+ * @return Formatted partial string representation.
+ */
+public fun CharSequence?.formatPartialRut(): String = Rut.formatPartial(this)
+
+/**
  * Creates a [Rut] instance from this numeric [Long], automatically calculating its check digit.
  *
  * @receiver The numeric body of the RUT.

@@ -1,5 +1,9 @@
 package com.ezermackenzie.rut
 
+import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
+import kotlin.random.Random
+
 /**
  * Immutable domain model representing a validated Chilean RUT (Rol Único Tributario) / RUN (Rol Único Nacional).
  *
@@ -7,7 +11,7 @@ package com.ezermackenzie.rut
  * mathematically validated using the official Modulo 11 algorithm.
  *
  * Instances of this class are guaranteed to represent a valid, mathematically sound RUT.
- * To construct an instance, use [Rut.parse], [Rut.parseOrNull], or [Rut.of].
+ * To construct an instance, use [Rut.parse], [Rut.parseOrNull], [Rut.of], or [Rut.random].
  *
  * @property number The numeric body of the RUT (excluding the verification digit).
  * @property checkDigit The verification character (always normalized to uppercase `'0'`..`'9'` or `'K'`).
@@ -74,6 +78,18 @@ public class Rut private constructor(
     }
 
     /**
+     * Returns the numeric body of this RUT for destructuring declarations:
+     * `val (number, checkDigit) = rut`
+     */
+    public operator fun component1(): Long = number
+
+    /**
+     * Returns the verification check digit of this RUT for destructuring declarations:
+     * `val (number, checkDigit) = rut`
+     */
+    public operator fun component2(): Char = checkDigit
+
+    /**
      * Compares this RUT with another RUT based on their numeric bodies.
      */
     override fun compareTo(other: Rut): Int = this.number.compareTo(other.number)
@@ -114,6 +130,7 @@ public class Rut private constructor(
          * @return The calculated check digit as uppercase `'0'`..`'9'` or `'K'`.
          * @throws IllegalArgumentException If [number] is less than 1 or greater than [MAX_NUMBER].
          */
+        @JvmStatic
         public fun calculateCheckDigit(number: Long): Char {
             require(number in MIN_NUMBER..MAX_NUMBER) {
                 "RUT number must be between $MIN_NUMBER and $MAX_NUMBER, but was $number."
@@ -141,6 +158,7 @@ public class Rut private constructor(
          * @return A valid [Rut] instance.
          * @throws IllegalArgumentException If [number] is not within valid boundaries.
          */
+        @JvmStatic
         public fun of(number: Long): Rut {
             val cd = calculateCheckDigit(number)
             return Rut(number, cd)
@@ -154,6 +172,7 @@ public class Rut private constructor(
          * @return A valid [Rut] instance.
          * @throws RutParseException If the provided check digit does not match the calculated one.
          */
+        @JvmStatic
         public fun of(number: Long, checkDigit: Char): Rut {
             if (number !in MIN_NUMBER..MAX_NUMBER) {
                 throw RutParseException(
@@ -182,6 +201,7 @@ public class Rut private constructor(
          * @return [RutValidationResult.Valid] containing the [Rut] on success, or an instance of
          * [RutValidationResult.Invalid] detailing the failure reason.
          */
+        @JvmStatic
         public fun validate(input: CharSequence?): RutValidationResult {
             if (input == null) {
                 return RutValidationResult.Invalid.EmptyInput
@@ -296,6 +316,7 @@ public class Rut private constructor(
          * @param input The character sequence to test.
          * @return `true` if the input is valid, `false` otherwise.
          */
+        @JvmStatic
         public fun isValid(input: CharSequence?): Boolean = validate(input) is RutValidationResult.Valid
 
         /**
@@ -305,6 +326,7 @@ public class Rut private constructor(
          * @return A valid [Rut] instance.
          * @throws RutParseException If the input is invalid.
          */
+        @JvmStatic
         public fun parse(input: CharSequence): Rut {
             return when (val result = validate(input)) {
                 is RutValidationResult.Valid -> result.rut
@@ -318,11 +340,96 @@ public class Rut private constructor(
          * @param input The character sequence to parse.
          * @return A valid [Rut] instance, or `null` if the input is null or invalid.
          */
+        @JvmStatic
         public fun parseOrNull(input: CharSequence?): Rut? {
             return when (val result = validate(input)) {
                 is RutValidationResult.Valid -> result.rut
                 is RutValidationResult.Invalid -> null
             }
+        }
+
+        /**
+         * Cleans a raw or formatted RUT input by extracting alphanumeric characters
+         * and normalizing any check digit `'k'` to uppercase `'K'`.
+         *
+         * Returns an empty string if [input] is null, blank, or contains no alphanumeric characters.
+         *
+         * Example: `" 12.345.678-k "` becomes `"12345678K"`.
+         *
+         * @param input The character sequence to clean.
+         * @return Clean unformatted string representation containing only digits and `'K'`.
+         */
+        @JvmStatic
+        public fun clean(input: CharSequence?): String {
+            if (input == null) return ""
+            val builder = StringBuilder(input.length)
+            for (i in 0 until input.length) {
+                val c = input[i]
+                when {
+                    c.isDigit() -> builder.append(c)
+                    c == 'k' || c == 'K' -> builder.append('K')
+                }
+            }
+            return builder.toString()
+        }
+
+        /**
+         * Formats a raw or partial string as the user types into an interactive input field.
+         *
+         * Automatically inserts thousand dots and a hyphen separator before the check digit.
+         * If fewer than 2 characters are present, no hyphen is added.
+         *
+         * Examples:
+         * - `"1"` -> `"1"`
+         * - `"12"` -> `"1-2"`
+         * - `"12345"` -> `"1.234-5"`
+         * - `"123456785"` -> `"12.345.678-5"`
+         *
+         * @param input The raw or typed characters.
+         * @return Real-time formatted string representation.
+         */
+        @JvmStatic
+        public fun formatPartial(input: CharSequence?): String {
+            if (input == null) return ""
+            val cleaned = clean(input)
+            val len = cleaned.length
+            if (len <= 1) return cleaned
+
+            val bodyLen = len - 1
+            val checkDigit = cleaned[len - 1]
+            val firstGroupLen = if (bodyLen % 3 == 0) 3 else bodyLen % 3
+            val dotCount = (bodyLen - 1) / 3
+            val builder = StringBuilder(bodyLen + dotCount + 2)
+
+            builder.append(cleaned, 0, firstGroupLen)
+            var index = firstGroupLen
+            while (index < bodyLen) {
+                builder.append('.')
+                builder.append(cleaned, index, index + 3)
+                index += 3
+            }
+            builder.append('-').append(checkDigit)
+            return builder.toString()
+        }
+
+        /**
+         * Generates a mathematically valid [Rut] within the specified [range] using [random].
+         *
+         * @param range The range of valid numbers (defaults to standard RUT range 1_000_000L..99_999_999L).
+         * @param random The random instance to draw from.
+         * @return A valid [Rut] instance.
+         */
+        @JvmStatic
+        @JvmOverloads
+        public fun random(
+            range: LongRange = 1_000_000L..99_999_999L,
+            random: Random = Random.Default
+        ): Rut {
+            require(!range.isEmpty() && range.first >= MIN_NUMBER && range.last <= MAX_NUMBER) {
+                "Range $range must be non-empty and within $MIN_NUMBER..$MAX_NUMBER"
+            }
+            val num = random.nextLong(range.first, range.last + 1L)
+            return of(num)
         }
     }
 }
