@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `@OptIn(ExperimentalWasmDsl::class) wasmJs { browser() }` target for modern WebAssembly (Wasm GC) browser applications.
   - Added `js { browser() }` target for JavaScript (IR) browser applications.
   - Full compatibility across common Kotlin codebases without platform-specific `expect`/`actual` shims.
+  - Added `jsTest` and `wasmJsTest` to GitHub Actions CI test matrix (`gradle.yml`).
 
 ## [1.0.0] - 2026-09-08
 
