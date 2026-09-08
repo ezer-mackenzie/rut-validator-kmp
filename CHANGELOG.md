@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-09-08
+
+### Added
+- **WebAssembly & JavaScript Multiplatform Targets**:
+  - Added `@OptIn(ExperimentalWasmDsl::class) wasmJs { browser() }` target for modern WebAssembly (Wasm GC) browser applications.
+  - Added `js { browser() }` target for JavaScript (IR) browser applications.
+  - Full compatibility across common Kotlin codebases without platform-specific `expect`/`actual` shims.
+
 ## [1.0.0] - 2026-09-08
 
 ### Added

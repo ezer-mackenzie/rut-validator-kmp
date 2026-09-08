@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -8,7 +9,7 @@ plugins {
 }
 
 group = "io.github.ezer-mackenzie"
-version = "1.0.0"
+version = "1.0.1"
 
 kotlin {
     explicitApi()
@@ -32,6 +33,14 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
     linuxX64()
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
+    js {
+        browser()
+    }
 
     sourceSets {
         commonMain.dependencies {

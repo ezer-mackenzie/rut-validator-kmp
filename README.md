@@ -19,6 +19,8 @@ Built adhering to the strictest Kotlin library best practices—including **Expl
 | **Android** | `android` | API 24+ (Android 7.0+) |
 | **iOS** | `iosArm64`, `iosSimulatorArm64` | iOS 12+ (64-bit ARM & Simulator) |
 | **Linux** | `linuxX64` | x86_64 Linux |
+| **WebAssembly** | `wasmJs` | Browser (Wasm GC) |
+| **JavaScript** | `js` | Browser (IR) |
 
 ---
 
@@ -45,7 +47,7 @@ Add the dependency to your `commonMain` source set:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.ezer-mackenzie:rut-validator-kmp:1.0.0")
+            implementation("io.github.ezer-mackenzie:rut-validator-kmp:1.0.1")
         }
     }
 }
@@ -53,7 +55,7 @@ kotlin {
 
 ### Gradle (Groovy)
 ```groovy
-implementation 'io.github.ezer-mackenzie:rut-validator-kmp:1.0.0'
+implementation 'io.github.ezer-mackenzie:rut-validator-kmp:1.0.1'
 ```
 
 ### Maven
@@ -61,7 +63,7 @@ implementation 'io.github.ezer-mackenzie:rut-validator-kmp:1.0.0'
 <dependency>
     <groupId>io.github.ezer-mackenzie</groupId>
     <artifactId>rut-validator-kmp</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
