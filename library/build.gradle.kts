@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.dokka)
 }
 
-group = "io.github.ezermackenzie"
+group = "io.github.ezer-mackenzie"
 version = "1.0.0"
 
 kotlin {
