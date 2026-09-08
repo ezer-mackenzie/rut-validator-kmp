@@ -183,6 +183,52 @@ val sorted = listOf(r3, r1, r2).sorted()
 // Result: [1-9, 14-0, 12.345.678-5]
 ```
 
+### 7. Kotlin Destructuring Declarations
+
+Decompose any `Rut` instance into its numeric body and check digit:
+
+```kotlin
+val (number, checkDigit) = Rut.parse("12.345.678-5")
+println(number)     // 12345678
+println(checkDigit) // '5'
+```
+
+### 8. Cleaning & Normalization
+
+Extract unformatted digits and normalize `'k'` to uppercase `'K'` from dirty inputs:
+
+```kotlin
+import com.ezermackenzie.rut.cleanRut
+
+val clean = " 12.345.678-k ".cleanRut() // "12345678K"
+val direct = Rut.clean("12.345.678-5")    // "123456785"
+```
+
+### 9. Real-Time UI Input Masking / Live Formatting
+
+Effortlessly format input in real time as users type in mobile or web forms:
+
+```kotlin
+import com.ezermackenzie.rut.formatPartialRut
+
+"12345".formatPartialRut()     // "1.234-5"
+"123456785".formatPartialRut() // "12.345.678-5"
+"21305614k".formatPartialRut() // "21.305.614-K"
+```
+
+### 10. Random Valid RUT Generator (Testing & QA)
+
+Generate mathematically valid RUTs for unit tests, mock databases, and seeding:
+
+```kotlin
+// Random RUT in standard range (1,000,000 to 99,999,999)
+val randomRut = Rut.random()
+println(randomRut.formatted) // e.g. "18.492.103-7"
+
+// Custom number range
+val smallRut = Rut.random(range = 100L..999L)
+```
+
 ---
 
 ## API Documentation (Dokka)
