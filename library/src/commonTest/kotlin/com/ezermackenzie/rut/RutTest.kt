@@ -129,13 +129,18 @@ class RutTest {
             "12.34a.678-5",
             "12.345.678-X",
             "12.345.678#5",
-            "12 345 678-5"
+            "12 345 678-5",
+            "12345678-",
+            "12..345.678-5",
+            "12345678.-5",
+            "12-345-678-5",
+            "-123456785"
         )
 
         for (input in invalidChars) {
             assertFalse(Rut.isValid(input), "Expected '$input' to be invalid")
             val result = Rut.validate(input)
-            assertIs<RutValidationResult.Invalid.InvalidCharacter>(result)
+            assertTrue(result is RutValidationResult.Invalid, "Expected Invalid result for '$input'")
         }
     }
 
@@ -248,6 +253,7 @@ class RutTest {
         assertEquals("12.345.678-5", Rut.formatPartial("123456785"))
         assertEquals("12.345.678-5", "123456785".formatPartialRut())
         assertEquals("21.305.614-K", "21305614k".formatPartialRut())
+        assertEquals("123.456.789-0", Rut.formatPartial("12345678909999"))
     }
 
     @Test

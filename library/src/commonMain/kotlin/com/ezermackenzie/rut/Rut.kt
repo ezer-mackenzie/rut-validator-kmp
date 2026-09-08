@@ -255,14 +255,14 @@ public class Rut private constructor(
                         checkDigitChar = 'K'
                     }
                     c == '-' -> {
-                        if (hyphenFound || i == start || i == end && checkDigitChar != null) {
+                        if (hyphenFound || i == start || i == end || checkDigitChar != null) {
                             return RutValidationResult.Invalid.InvalidCharacter(c, i)
                         }
                         hyphenFound = true
                     }
                     c == '.' -> {
-                        // Dots are allowed as thousand separators, cannot be first or last
-                        if (i == start || i == end || hyphenFound) {
+                        // Dots are allowed as thousand separators, cannot be first, last, adjacent to hyphen, or consecutive
+                        if (i == start || i == end || hyphenFound || (i > start && input[i - 1] == '.') || (i + 1 <= end && input[i + 1] == '-')) {
                             return RutValidationResult.Invalid.InvalidCharacter(c, i)
                         }
                     }
@@ -274,6 +274,10 @@ public class Rut private constructor(
                         return RutValidationResult.Invalid.InvalidCharacter(c, i)
                     }
                 }
+            }
+
+            if (hyphenFound && checkDigitChar == null) {
+                return RutValidationResult.Invalid.InvalidLength(bodyDigitsCount)
             }
 
             // If no explicit hyphen was used, the last digit encountered in body is the check digit
@@ -391,7 +395,8 @@ public class Rut private constructor(
         @JvmStatic
         public fun formatPartial(input: CharSequence?): String {
             if (input == null) return ""
-            val cleaned = clean(input)
+            val rawCleaned = clean(input)
+            val cleaned = if (rawCleaned.length > 10) rawCleaned.substring(0, 10) else rawCleaned
             val len = cleaned.length
             if (len <= 1) return cleaned
 
