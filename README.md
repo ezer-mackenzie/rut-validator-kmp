@@ -247,6 +247,7 @@ For more details on the API evolution, SemVer stability policy, and future miles
 ## Contributing
 
 We welcome contributions! Please review:
+- [CHANGELOG.md](CHANGELOG.md) — Release notes and history of changes.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — Guidelines on workflow, Conventional Commits, and co-authorship.
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — Contributor Covenant Code of Conduct.
 - [AGENTS.md](AGENTS.md) — Repository guide for automated tools and AI coding agents.
