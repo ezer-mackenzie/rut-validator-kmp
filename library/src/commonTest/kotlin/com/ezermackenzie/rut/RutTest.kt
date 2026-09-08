@@ -214,4 +214,53 @@ class RutTest {
         val fromInt = 12345678.toRut()
         assertEquals("12.345.678-5", fromInt.formatted)
     }
+
+    @Test
+    fun testDestructuringDeclarations() {
+        val rut = Rut.parse("12.345.678-5")
+        val (number, checkDigit) = rut
+
+        assertEquals(12345678L, number)
+        assertEquals('5', checkDigit)
+    }
+
+    @Test
+    fun testCleanRut() {
+        assertEquals("123456785", Rut.clean(" 12.345.678-5 "))
+        assertEquals("21305614K", Rut.clean("21.305.614-k"))
+        assertEquals("21305614K", "21.305.614-k".cleanRut())
+        assertEquals("", (null as String?).cleanRut())
+        assertEquals("", "".cleanRut())
+    }
+
+    @Test
+    fun testFormatPartialRutLiveTyping() {
+        assertEquals("", Rut.formatPartial(null))
+        assertEquals("", Rut.formatPartial(""))
+        assertEquals("1", Rut.formatPartial("1"))
+        assertEquals("1-2", Rut.formatPartial("12"))
+        assertEquals("12-3", Rut.formatPartial("123"))
+        assertEquals("123-4", Rut.formatPartial("1234"))
+        assertEquals("1.234-5", Rut.formatPartial("12345"))
+        assertEquals("12.345-6", Rut.formatPartial("123456"))
+        assertEquals("123.456-7", Rut.formatPartial("1234567"))
+        assertEquals("1.234.567-8", Rut.formatPartial("12345678"))
+        assertEquals("12.345.678-5", Rut.formatPartial("123456785"))
+        assertEquals("12.345.678-5", "123456785".formatPartialRut())
+        assertEquals("21.305.614-K", "21305614k".formatPartialRut())
+    }
+
+    @Test
+    fun testRandomRutGeneration() {
+        for (i in 1..50) {
+            val randomRut = Rut.random()
+            assertTrue(randomRut.number in 1_000_000L..99_999_999L)
+            assertTrue(Rut.isValid(randomRut.formatted))
+            assertEquals(randomRut, Rut.parse(randomRut.formatted))
+        }
+
+        val customRangeRut = Rut.random(range = 100L..999L)
+        assertTrue(customRangeRut.number in 100L..999L)
+        assertTrue(Rut.isValid(customRangeRut.formatted))
+    }
 }
